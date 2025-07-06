@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Realms</title>
+    <style>
+        {PREFIX FREE (if enabled)}
+  {MODERNIZR (if enabled)}
+
+        /* Reset styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Background styling */
+        .game-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: -1;
+        }
+
+        /* Centered cutscene text */
+        .cutscene-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 22px;
+            text-align: center;
+            z-index: 5;
+            display: none;
+        }
+
+        /* Start screen */
+        .centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: transparent;
+            z-index: 1;
+        }
+
+        .play-button {
+            font-size: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .play-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Aloe styling */
+        .aloe {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(45deg, purple, darkblue);
+            border-radius: 15px;
+            z-index: 2;
+        }
+
+        /* Corrupted Pokémon styling */
+        .corrupted {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+        }
+
+        /* Teleport effect */
+        .teleport {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, white, transparent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: teleportEffect 1s ease-in-out forwards;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes teleportEffect {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(3);
+            }
+        }
+
+        /* Realm styling */
+        .realm {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: rgba(0, 128, 255, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 128, 255, 0.8);
+            z-index: 1;
+        }
+
+        .fragment {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: gold;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background -->
+    <div class="game-background"></div>
+
+    <div class="centered" id="start-screen">
+        <button class="play-button" id="play-btn">Start Game</button>
+    </div>
+
+    <!-- Cutscene Text -->
+    <div id="cutscene-text" class="cutscene-text"></div>
+
+    <script>
+        const startButton = document.getElementById('play-btn');
+        const cutsceneText = document.getElementById('cutscene-text');
+        const startScreen = document.getElementById('start-screen');
+
+        startButton.addEventListener('click', () => {
+            startScreen.style.display = 'none';
+            startCutscene();
+        });
+
+        const narrative = [
+            "Before the universe existed, there was a being of pure power.",
+            "The entity is called Aloe (Pre-Evolution). It decided to make the universe as we know it.",
+            "As it could feel distant threats approaching..."
+        ];
+        let currentLine = 0;
+
+        function startCutscene() {
+            cutsceneText.style.display = 'block';
+            cutsceneText.innerText = narrative[currentLine];
+            currentLine++;
+
+            const interval = setInterval(() => {
+                if (currentLine < narrative.length) {
+                    cutsceneText.innerText = narrative[currentLine];
+                    if (narrative[currentLine] === "As it could feel distant threats approaching...") {
+                        playAnimationSequence();
+                    }
+                    currentLine++;
+                } else {
+                    clearInterval(interval);
+                    cutsceneText.style.display = 'none'; // Hide text before starting animation
+                }
+            }, 4000); // Transition between lines every 4 seconds
+        }
+
+        /* Animation Sequence */
+        function playAnimationSequence() {
+            // Step 1: Aloe appears and moves
+            const aloe = document.createElement('div');
+            aloe.className = 'aloe';
+            aloe.style.top = `${Math.random() * (window.innerHeight - 100)}px`; // Random starting position
+            aloe.style.left = `${Math.random() * (window.innerWidth - 100)}px`;
+            document.body.appendChild(aloe);
+
+            // Step 2: Corrupted Pokémon appear and chase Aloe
+            const corruptedPokemon = [];
+            for (let i = 0; i < 3; i++) {
+                const corrupted = document.createElement('div');
+                corrupted.className = 'corrupted';
+                corrupted.style.top = `${Math.random() * (window.innerHeight - 70)}px`;
+                corrupted.style.left = `${Math.random() * (window.innerWidth - 70)}px`;
+                document.body.appendChild(corrupted);
+                corruptedPokemon.push(corrupted);
+            }
+
+            // Step 3: Teleport Aloe
+            setTimeout(() => {
+                corruptedPokemon.forEach(pokemon => pokemon.remove()); // Remove corrupted Pokémon
+                const teleportEffect = document.createElement('div');
+                teleportEffect.className = 'teleport';
+                document.body.appendChild(teleportEffect);
+                aloe.remove(); // Aloe teleports away
+            }, 3000);
+
+            // Step 4: Create realms (non-overlapping, within screen bounds)
+            setTimeout(() => {
+                const realmPositions = []; // Track positions for collision-free placement
+                for (let i = 0; i < 5; i++) {
+                    const realm = document.createElement('div');
+                    realm.className = 'realm';
+
+                    // Generate positions ensuring no overlap and within bounds
+                    let positionValid = false;
+                    let top, left;
+
+                    while (!positionValid) {
+                        top = Math.random() * (window.innerHeight - 150); // Realm height
+                        left = Math.random() * (window.innerWidth - 150); // Realm width
+
+
+                        positionValid = !realmPositions.some(pos => {
+                            return (
+                                Math.abs(pos.top - top) < 150 && // Minimum gap of 150px
+                                Math.abs(pos.left - left) < 150
+                            );
+                        });
+                    }
+
+
+                    realmPositions.push({ top, left });
+                    realm.style.top = `${top}px`;
+                    realm.style.left = `${left}px`;
+                    document.body.appendChild(realm);
+                }
+            }, 5000);
+
+
+            setTimeout(() => {
+                for (let i = 0; i < 10; i++) {
+                    const fragment = document.createElement('div');
+                    fragment.className = 'fragment';
+                    fragment.style.top = '50%';
+                    fragment.style.left = '50%';
+                    document.body.appendChild(fragment);
+                }
+            }, 8000);
+        }
+    </script>
+</body>
+</html>
