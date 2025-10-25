@@ -51,6 +51,11 @@
       max-width: 600px;
       line-height: 1.4em;
       user-select: none;
+      /* improved readability */
+      background: rgba(0, 0, 0, 0.55);
+      padding: 14px 18px;
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
     }
 
     .centered {
@@ -329,13 +334,20 @@ Your journey to become the ultimate Pokémon Battler begins now.
     }
 
     function showLinesLineByLine(element, text, delay = 3500) {
-      const lines = text.trim().split('\n').map(line => line.trim());
+      // Split lines, trim, and remove empty lines to avoid large gaps
+      const lines = text
+        .trim()
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
       element.textContent = '';
       let index = 0;
 
       function showNextLine() {
         if (index < lines.length) {
-          element.textContent += lines[index] + '\n\n'; // extra newline for spacing
+          // Use a single newline so paragraphs are close together but still readable
+          element.textContent += lines[index] + (index < lines.length - 1 ? '\n' : '');
           index++;
           setTimeout(showNextLine, delay);
         }
