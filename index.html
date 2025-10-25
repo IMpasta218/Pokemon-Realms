@@ -51,7 +51,6 @@
       max-width: 600px;
       line-height: 1.4em;
       user-select: none;
-      /* improved readability */
       background: rgba(0, 0, 0, 0.55);
       padding: 14px 18px;
       border-radius: 8px;
@@ -59,7 +58,6 @@
     }
 
     .cutscene-text p {
-      /* tightened spacing: ~1 line gap between paragraphs */
       margin: 0.4rem 0;
       line-height: 1.2em;
       font-size: 1rem;
@@ -266,35 +264,25 @@
         aloe.remove();
       }, 3000);
 
+      // === Updated realm creation (5 realms in a line above the sun) ===
       setTimeout(function () {
         const realmPositions = [];
         const realms = [];
-        for (let i = 0; i < 5; i++) {
+        const totalRealms = 5; // number of realms in a line
+        const lineTop = window.innerHeight * 0.3; // y-position of the line
+        const spacing = window.innerWidth * 0.15; // left margin
+        const gap = (window.innerWidth * 0.7) / (totalRealms - 1); // horizontal spacing
+
+        for (let i = 0; i < totalRealms; i++) {
           const realm = document.createElement('div');
           realm.className = 'realm';
 
-          let top, left, valid = false;
-          while (!valid) {
-            top = Math.random() * (window.innerHeight - 150);
-            left = Math.random() * (window.innerWidth - 150);
-            valid = !realmPositions.some(pos =>
-              Math.abs(pos.top - top) < 150 && Math.abs(pos.left - left) < 150
-            );
-          }
+          // horizontal line positioning
+          realm.style.top = lineTop + 'px';
+          realm.style.left = (spacing + i * gap) + 'px';
 
-          realm.style.top = top + 'px';
-          realm.style.left = left + 'px';
-
-          // The "one below the 4 in a line" logic: 
-          // We'll create 4 realms roughly in a horizontal line and 1 below them:
-          if (i < 4) {
-            // Arrange first 4 in a horizontal line near top
-            realm.style.top = (window.innerHeight * 0.3) + 'px';
-            realm.style.left = (window.innerWidth * 0.15 + i * (window.innerWidth * 0.17)) + 'px';
-          } else {
-            // The 5th realm below the line (Solar Realm 1)
-            realm.style.top = (window.innerHeight * 0.6) + 'px';
-            realm.style.left = (window.innerWidth * 0.4) + 'px';
+          // highlight the 5th realm
+          if (i === totalRealms - 1) {
             realm.classList.add('highlighted');
             realm.dataset.realmName = 'Solar Realm 1';
           }
@@ -317,7 +305,7 @@
 
       setTimeout(function () {
         const realmIntro = `
-In Solar Realm 1 — the one below the 4 in a line — far away from the others...
+In Solar Realm 1 — the one above the sun — far away from the others...
 lies your home: Planet ${playerPlanetName}.
 
 As a little introduction:
@@ -342,7 +330,6 @@ Your journey to become the ultimate Pokémon Battler begins now.
     }
 
     function showLinesLineByLine(element, text, delay = 3500) {
-      // Split text into paragraphs (separated by one or more blank lines)
       const paragraphs = text
         .trim()
         .split(/\n\s*\n+/)
